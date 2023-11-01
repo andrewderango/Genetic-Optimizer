@@ -1,5 +1,7 @@
-// Include everything necessary here 
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+// delete whatever isn't used upon submission
 
 double generate_random(double min, double max)
 {

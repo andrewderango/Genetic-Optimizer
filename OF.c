@@ -1,6 +1,6 @@
 #include <math.h>
 #include "functions.h"
-// Do know change anything in this file. You will not submit this file.
+// Do not change anything in this file. You will not submit this file.
 
 // Define the objective function function for optimization
 double Objective_function(int NUM_VARIABLES, double x[NUM_VARIABLES])
