@@ -1,11 +1,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <math.h>
 #include "functions.h"
 
 int main(int argc, char *argv[])
 {
-
     // <YOUR CODE: Handle the possible errors in input data given by the user and say how to execute the code>
 
     if (argc != 6) {
@@ -32,7 +32,6 @@ int main(int argc, char *argv[])
     double Ubound[] = {5.0, 5.0};
     // ###################################################################################
 
-
     // <YOUR CODE: Here make all the initial print outs>
 
     srand(time(NULL));
@@ -53,6 +52,8 @@ int main(int argc, char *argv[])
     double fitness[POPULATION_SIZE];
     double cumulative_fitness_probs[POPULATION_SIZE];
     double new_population[POPULATION_SIZE][NUM_VARIABLES];
+    double min_fitness;
+    double new_min_fitness;
 
     // <YOUR CODE: Call generate_population function to initialize the "population"> like:
     // generate_population(POPULATION_SIZE, NUM_VARIABLES, population, Lbound, Ubound);
@@ -61,8 +62,7 @@ int main(int argc, char *argv[])
 
     // iteration starts here. The loop continues until MAX_GENERATIONS is reached
     // Or stopping criteria is met
-    for (int generation = 0; generation < MAX_GENERATIONS; generation++)
-    {
+    for (int generation = 0; generation < MAX_GENERATIONS; generation++) {
         printf("\n-- GENERATION %d --\n", generation + 1);
 
         // <YOUR CODE: Compute the fitness values using objective function for
@@ -72,6 +72,9 @@ int main(int argc, char *argv[])
         for (int i = 0; i < POPULATION_SIZE; i++) {
             fitness[i] = Objective_function(NUM_VARIABLES, population[i]);
             cumulative_fitness_probs[i] = 1/(fitness[i]+1e-6);
+            if (i == 0 || fitness[i] < min_fitness) {
+                min_fitness = fitness[i];
+            }
         }
 
         double fitness_sum = 0.0;
@@ -90,6 +93,7 @@ int main(int argc, char *argv[])
             }
             printf("%f\t%f\n", fitness[i], cumulative_fitness_probs[i]);
         }
+        printf("Best Fitness: %f\n", min_fitness);
 
         // <YOUR CODE: Here implement the logic of finding best solution with minimum fitness value
         // and the stopping criteria>
@@ -126,24 +130,44 @@ int main(int argc, char *argv[])
         // <YOUR CODE: Here call the mutation function>
 
         printf("\n-- MUTATION --\n");
+        printf("x1\t\tx2\t\tFitness\n");
         mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate);
         for (int i = 0; i < POPULATION_SIZE; i++) {
             for (int j = 0; j < NUM_VARIABLES; j++) {
-                printf("%f ", new_population[i][j]);
+                population[i][j] = new_population[i][j];
+                printf("%f\t", new_population[i][j]);
             }
-            printf("\n");
+            printf("%f\n", Objective_function(NUM_VARIABLES, new_population[i]));
+            if (i == 0 || Objective_function(NUM_VARIABLES, new_population[i]) < new_min_fitness) {
+                new_min_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+            }
         }
+        printf("Best Fitness: %f\n\n", new_min_fitness);
 
         // Now you have the a new population, and it goes to the beginning of loop to re-compute all again
 
-        for(int i = 0; i < POPULATION_SIZE; i++) {
-            for(int j = 0; j < NUM_VARIABLES; j++) {
-                population[i][j] = new_population[i][j];
-            }
+        printf("Generation %d Progress\n", generation + 1);
+        printf("Previous best fitness: %f\n", min_fitness);
+        printf("New best fitness: %f\n", new_min_fitness);
+        if (fabs(new_min_fitness - min_fitness) < stop_criteria) {
+            break;
         }
     }
 
     // <YOUR CODE: Jump to this part of code if the stopping criteria is met before MAX_GENERATIONS is met>
+
+    double optimal_solution[NUM_VARIABLES];
+    double optimal_fitness;
+    for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int j = 0; j < NUM_VARIABLES; j++) {
+            if (i == 0 || Objective_function(NUM_VARIABLES, new_population[i]) < optimal_fitness) {
+                optimal_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+                for (int k = 0; k < NUM_VARIABLES; k++) {
+                    optimal_solution[k] = new_population[i][k];
+                }
+            }
+        }
+    }
 
     // ###################################################################################
     // You dont need to change anything here
@@ -155,6 +179,12 @@ int main(int argc, char *argv[])
     // ###################################################################################
 
     // <Here print out the best solution and objective function value for the best solution like the format>
+
+    printf("\n-- FINAL SOLUTION --\n");
+    for (int i = 0; i < NUM_VARIABLES; i++) {
+        printf("x%d: %f\n", i + 1, optimal_solution[i]);
+    }
+    printf("Optimal Fitness: %f\n", optimal_fitness);
 
     return 0;
 }
