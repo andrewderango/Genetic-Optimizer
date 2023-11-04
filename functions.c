@@ -86,18 +86,41 @@ void crossover(int POPULATION_SIZE, int NUM_VARIABLES, double fitness[POPULATION
 }
 
 void mutate(int POPULATION_SIZE, int NUM_VARIABLES, double new_population[POPULATION_SIZE][NUM_VARIABLES], double population[POPULATION_SIZE][NUM_VARIABLES], double Lbound[NUM_VARIABLES], double Ubound[NUM_VARIABLES], double mutate_rate) {
-    for (int i = 0; i < POPULATION_SIZE; i++) {
-        for (int j = 0; j < NUM_VARIABLES; j++) {
-            if (generate_random(0, 1) < mutate_rate) {
-                new_population[i][j] = generate_random(Lbound[j], Ubound[j]);
+
+    int target_mutation = POPULATION_SIZE * NUM_VARIABLES * mutate_rate;
+
+    // printf("Population Size: %d\n", POPULATION_SIZE);
+    // printf("Number of Variables: %d\n", NUM_VARIABLES);
+    // printf("Mutate Rate: %f\n", mutate_rate);
+    // printf("Genes to mutate: %d\n\n", target_mutation);
+
+    int mutate_index;
+    int mutate_indexes[target_mutation];
+
+    for (int i = 0; i < target_mutation; i++) {
+        mutate_index = generate_int() % (POPULATION_SIZE * NUM_VARIABLES);
+        for (int j = 0; j < i; j++) {
+            if (mutate_index == mutate_indexes[j]) {
+                mutate_index = generate_int() % (POPULATION_SIZE * NUM_VARIABLES);
+                j = 0;
             }
         }
+        mutate_indexes[i] = mutate_index;
     }
 
-    // copy everything from new_population into population
+    // printf("Mutate indexes: ");
+    // for (int i = 0; i < target_mutation; i++) {
+    //     printf("%d ", mutate_indexes[i]);
+    // }
+    // printf("\n");
+
     for (int i = 0; i < POPULATION_SIZE; i++) {
         for (int j = 0; j < NUM_VARIABLES; j++) {
-            population[i][j] = new_population[i][j];
+            for (int k = 0; k < target_mutation; k++) {
+                if (i*NUM_VARIABLES + j == mutate_indexes[k]) {
+                    new_population[i][j] = generate_random(Lbound[j], Ubound[j]);
+                }
+            }
         }
     }
 }

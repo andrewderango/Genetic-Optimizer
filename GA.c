@@ -112,12 +112,6 @@ int main(int argc, char *argv[])
             }
         }
 
-        for(int i = 0; i < POPULATION_SIZE; i++) {
-            for(int j = 0; j < NUM_VARIABLES; j++) {
-                population[i][j] = new_population[i][j];
-            }
-        }
-
         // <YOUR CODE: Here call the crossover function>
         
         printf("\n-- CROSSOVER --\n");
@@ -131,7 +125,22 @@ int main(int argc, char *argv[])
 
         // <YOUR CODE: Here call the mutation function>
 
+        printf("\n-- MUTATION --\n");
+        mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate);
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            for (int j = 0; j < NUM_VARIABLES; j++) {
+                printf("%f ", new_population[i][j]);
+            }
+            printf("\n");
+        }
+
         // Now you have the a new population, and it goes to the beginning of loop to re-compute all again
+
+        for(int i = 0; i < POPULATION_SIZE; i++) {
+            for(int j = 0; j < NUM_VARIABLES; j++) {
+                population[i][j] = new_population[i][j];
+            }
+        }
     }
 
     // <YOUR CODE: Jump to this part of code if the stopping criteria is met before MAX_GENERATIONS is met>
