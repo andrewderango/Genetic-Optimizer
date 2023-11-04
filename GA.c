@@ -45,44 +45,89 @@ int main(int argc, char *argv[])
     printf("Max generations: %d\n", MAX_GENERATIONS);
     printf("Crossover rate: %f\n", crossover_rate);
     printf("Mutate rate: %f\n", mutate_rate);
-    printf("Stop criteria: %f\n\n", stop_criteria);
+    printf("Stop criteria: %f\n", stop_criteria);
 
     // <YOUR CODE: Declare all the arrays you need here>
 
     double population[POPULATION_SIZE][NUM_VARIABLES];
     double fitness[POPULATION_SIZE];
-    double fitness_probs[POPULATION_SIZE];
+    double cumulative_fitness_probs[POPULATION_SIZE];
     double new_population[POPULATION_SIZE][NUM_VARIABLES];
 
     // <YOUR CODE: Call generate_population function to initialize the "population"> like:
     // generate_population(POPULATION_SIZE, NUM_VARIABLES, population, Lbound, Ubound);
 
     generate_population(POPULATION_SIZE, NUM_VARIABLES, population, Lbound, Ubound);
-    for (int i = 0; i < POPULATION_SIZE; i++) {
-        fitness[i] = Objective_function(NUM_VARIABLES, population[i]);
-        fitness_probs[i] = 1/(fitness[i]+1e-6);
-    }
-
-    printf("-- INITIAL POPULATION --\n");
-    for (int i = 0; i < POPULATION_SIZE; i++) {
-        for (int j = 0; j < NUM_VARIABLES; j++) {
-            printf("%f\t", population[i][j]);
-        }
-        printf("%f\t%f\n", fitness[i], fitness_probs[i]);
-    }
 
     // iteration starts here. The loop continues until MAX_GENERATIONS is reached
     // Or stopping criteria is met
     for (int generation = 0; generation < MAX_GENERATIONS; generation++)
     {
+        printf("\n-- GENERATION %d --\n", generation + 1);
+
         // <YOUR CODE: Compute the fitness values using objective function for
         // each row in "population" (each set of variables)> like:
         // compute_objective_function(POPULATION_SIZE, NUM_VARIABLES, population, fitness);
 
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            fitness[i] = Objective_function(NUM_VARIABLES, population[i]);
+            cumulative_fitness_probs[i] = 1/(fitness[i]+1e-6);
+        }
+
+        double fitness_sum = 0.0;
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            fitness_sum += cumulative_fitness_probs[i];
+        }
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            cumulative_fitness_probs[i] = cumulative_fitness_probs[i]/fitness_sum + (i > 0 ? cumulative_fitness_probs[i-1] : 0);
+        }
+
+        printf("-- INITIAL POPULATION --\n");
+        printf("x1\t\tx2\t\tFitness\t\tCumulative Scaled Fitness\n");
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            for (int j = 0; j < NUM_VARIABLES; j++) {
+                printf("%f\t", population[i][j]);
+            }
+            printf("%f\t%f\n", fitness[i], cumulative_fitness_probs[i]);
+        }
+
         // <YOUR CODE: Here implement the logic of finding best solution with minimum fitness value
         // and the stopping criteria>
 
+        printf("\n-- EVOLUTION --\n");
+        printf("Random\t\tIndex\tx1\t\tx2\n");
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            double random = generate_random(0.0, 1.0);
+            printf("%f\t", random);
+            for (int j = 0; j < POPULATION_SIZE; j++) {
+                if (random < cumulative_fitness_probs[j]) {
+                    printf("%d\t", j);
+                    for (int k = 0; k < NUM_VARIABLES; k++) {
+                        new_population[i][k] = population[j][k];
+                        printf("%f\t", new_population[i][k]);
+                    }
+                    printf("\n");
+                    break;
+                }
+            }
+        }
+
+        for(int i = 0; i < POPULATION_SIZE; i++) {
+            for(int j = 0; j < NUM_VARIABLES; j++) {
+                population[i][j] = new_population[i][j];
+            }
+        }
+
         // <YOUR CODE: Here call the crossover function>
+        
+        printf("\n-- CROSSOVER --\n");
+        crossover(POPULATION_SIZE, NUM_VARIABLES, fitness, new_population, population, crossover_rate);
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            for (int j = 0; j < NUM_VARIABLES; j++) {
+                printf("%f ", new_population[i][j]);
+            }
+            printf("\n");
+        }
 
         // <YOUR CODE: Here call the mutation function>
 

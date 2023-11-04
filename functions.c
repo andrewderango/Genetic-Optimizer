@@ -39,15 +39,49 @@ void compute_objective_function(int POPULATION_SIZE, int NUM_VARIABLES, double p
 of decision variables (individual) or each row in "population".
 And save the new population in "new_population"*/
 void crossover(int POPULATION_SIZE, int NUM_VARIABLES, double fitness[POPULATION_SIZE], double new_population[POPULATION_SIZE][NUM_VARIABLES], double population[POPULATION_SIZE][NUM_VARIABLES], double crossover_rate) {
-    for (int i = 0; i < POPULATION_SIZE; i++) {
-        for (int j = 0; j < NUM_VARIABLES; j++) {
-            if (generate_random(0, 1) < crossover_rate) {
-                int partner = rand() % POPULATION_SIZE;
-                new_population[i][j] = (population[i][j] + population[partner][j]) / 2.0;
-            } else {
-                new_population[i][j] = population[i][j];
+    for (int i = 0; i < POPULATION_SIZE; i += 2) {
+
+        // printf("i: %d\n", i);
+
+        if (generate_random(0, 1) < crossover_rate) {
+
+            double* parent1 = new_population[i];
+            double* parent2 = new_population[i + 1];
+
+            // printf("Parent1: %f, %f\n", parent1[0], parent1[1]);
+            // printf("Parent2: %f, %f\n", parent2[0], parent2[1]);
+
+            // Pick a random crossover point (1 for 2 variables)
+            int crosspoint = generate_random(1, NUM_VARIABLES);
+            // printf("Crosspoint: %d\n", crosspoint);
+
+            double child1[NUM_VARIABLES];
+            double child2[NUM_VARIABLES];
+
+            // Splitting these up makes the code work for more variables
+            for (int j = 0; j < crosspoint; j++) {
+                child1[j] = parent1[j];
+                child2[j] = parent2[j];
             }
-        }
+
+            for (int j = crosspoint; j < NUM_VARIABLES; j++) {
+                child1[j] = parent2[j];
+                child2[j] = parent1[j];
+            }
+
+            // printf("Child1: %f, %f\n", child1[0], child1[1]);
+            // printf("Child2: %f, %f\n", child2[0], child2[1]);
+
+            // Replace the parents with the new children
+            for (int j = 0; j < NUM_VARIABLES; j++) {
+                new_population[i][j] = child1[j];
+                new_population[i + 1][j] = child2[j];
+            }
+        } 
+        // else {
+        //     printf("No crossover\n");
+        // }
+        // printf("\n");
     }
 }
 
