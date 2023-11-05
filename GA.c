@@ -115,6 +115,7 @@ int main(int argc, char *argv[])
                     // printf("%d\t", j);
                     for (int k = 0; k < NUM_VARIABLES; k++) {
                         new_population[i][k] = population[j][k];
+                        fitness[i] = Objective_function(NUM_VARIABLES, new_population[i]);
                         // printf("%f\t", new_population[i][k]);
                     }
                     // printf("\n");
@@ -138,7 +139,10 @@ int main(int argc, char *argv[])
 
         // printf("\n-- MUTATION --\n");
         // printf("x1\t\tx2\t\tFitness\n");
+
+        population[0][0] = generation; // I know this is a bad way to do this. But I can't edit the header file, so this is the only way to access the generation number in the mutate function.
         mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate);
+        
         for (int i = 0; i < POPULATION_SIZE; i++) {
             for (int j = 0; j < NUM_VARIABLES; j++) {
                 population[i][j] = new_population[i][j];
@@ -158,8 +162,9 @@ int main(int argc, char *argv[])
         printf("New best fitness: %f\n", new_min_fitness);
         if (fabs(new_min_fitness - min_fitness) < stop_criteria) {
             converge_count++;
-            if (converge_count == 10) {
-                printf("Converged at Generation %d\n", generation + 1);
+            if (converge_count == 25) {
+                generation++;
+                printf("Converged at Generation %d\n", generation);
                 break;
             }
         }
@@ -209,6 +214,6 @@ int main(int argc, char *argv[])
         }
     }
     printf("\nBest Fitness: %f\n", optimal_fitness);
-    printf("Generations Used: %d\n", generation + 1);
+    printf("Generations Used: %d\n", generation);
     return 0;
 }
