@@ -258,6 +258,9 @@ void crossover(int POPULATION_SIZE, int NUM_VARIABLES, double fitness[POPULATION
 // Improved mutate function; bonus
 void mutate(int POPULATION_SIZE, int NUM_VARIABLES, double new_population[POPULATION_SIZE][NUM_VARIABLES], double population[POPULATION_SIZE][NUM_VARIABLES], double Lbound[NUM_VARIABLES], double Ubound[NUM_VARIABLES], double mutate_rate) {
 
+    double best_fitness_coord[NUM_VARIABLES];
+    double best_fitness;
+
     int target_mutation = POPULATION_SIZE * NUM_VARIABLES * mutate_rate;
     int generation = population[0][0];
 
@@ -265,12 +268,47 @@ void mutate(int POPULATION_SIZE, int NUM_VARIABLES, double new_population[POPULA
     double HZ_TRANSLATION = -1.09219;
     double DECAY_INTENSITY = -16.1197;
     double activator = exp((generation+HZ_TRANSLATION)/DECAY_INTENSITY);
-    if (activator > 1) {
-        activator = 1;
+
+    for (int i = 0; i < POPULATION_SIZE; i++) {
+        for (int j = 0; j < NUM_VARIABLES; j++) {
+            double point_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+            if (i == 0 || point_fitness < best_fitness) {
+                best_fitness = point_fitness;
+                for (int k = 0; k < NUM_VARIABLES; k++) {
+                    best_fitness_coord[k] = new_population[i][k];
+                }
+            }
+        }
     }
 
+    printf("Best Fitness: %f\n", best_fitness);
+    printf("Best Fitness Coordinates: ");
+    for (int i = 0; i < NUM_VARIABLES; i++) {
+        printf("%f ", best_fitness_coord[i]);
+    }
+    printf("\n");
+
     // printf("Generation: %d\n", generation);
-    // printf("Activator: %f\n", activator);
+    printf("Activator: %f\n", activator);
+    double range[NUM_VARIABLES];
+
+    for (int i = 0; i < NUM_VARIABLES; i++) {
+        range[i] = Ubound[i] - Lbound[i];
+    }
+
+    for (int i = 0; i < NUM_VARIABLES; i++) {
+        if (best_fitness_coord[i] - range[i]*activator/2 > Lbound[i]) {
+            Lbound[i] = best_fitness_coord[i] - range[i]*activator/2;
+        } 
+        if (best_fitness_coord[i] + range[i]*activator/2 < Ubound[i]) {
+            Ubound[i] = best_fitness_coord[i] + range[i]*activator/2;
+        }
+    }
+
+    for (int i = 0; i < NUM_VARIABLES; i++) {
+        printf("Lbound[%d]: %f\n", i, Lbound[i]);
+        printf("Ubound[%d]: %f\n", i, Ubound[i]);
+    }
 
     int mutate_index;
     int mutate_indexes[target_mutation];
@@ -292,11 +330,12 @@ void mutate(int POPULATION_SIZE, int NUM_VARIABLES, double new_population[POPULA
     // }
     // printf("\n");
 
+
     for (int i = 0; i < POPULATION_SIZE; i++) {
         for (int j = 0; j < NUM_VARIABLES; j++) {
             for (int k = 0; k < target_mutation; k++) {
                 if (i*NUM_VARIABLES + j == mutate_indexes[k]) {
-                    new_population[i][j] = generate_random(Lbound[j]*activator, Ubound[j]*activator);
+                    new_population[i][j] = generate_random(Lbound[j], Ubound[j]);
                 }
             }
         }

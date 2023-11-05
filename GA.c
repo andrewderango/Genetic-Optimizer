@@ -164,7 +164,7 @@ int main(int argc, char *argv[])
             converge_count++;
             if (converge_count == 25) {
                 generation++;
-                printf("Converged at Generation %d\n", generation);
+                // printf("Converged at Generation %d\n", generation);
                 break;
             }
         }
