@@ -125,16 +125,16 @@ void crossover(int POPULATION_SIZE, int NUM_VARIABLES, double fitness[POPULATION
     // printf("Standard Deviation: %f\n", fitness_stdev);
     double exp_stdev_sum = 0.0;
     for (int i = 0; i < POPULATION_SIZE; i++) {
-        exp_stdev_sum += exp(-(fitness[i]-fitness_avg)/fitness_stdev);
+        exp_stdev_sum += exp(-(fitness[i]-fitness_avg)/(fitness_stdev+1e-6));
         // printf("%f ", exp(-(fitness[i]-fitness_avg)/fitness_stdev)/fitness_stdev);
     }
     // printf("\n");
     double cumulative_exp_stdev_sum = 0.0;
     double crossover_index_prob[POPULATION_SIZE];
     for (int i = 0; i < POPULATION_SIZE; i++) {
-        crossover_index_prob[i] = exp(-(fitness[i]-fitness_avg)/fitness_stdev)/exp_stdev_sum + cumulative_exp_stdev_sum;
+        crossover_index_prob[i] = exp(-(fitness[i]-fitness_avg)/(fitness_stdev+1e-6))/(exp_stdev_sum+1e-6) + cumulative_exp_stdev_sum;
         // printf("%f ", exp(-(fitness[i]-fitness_avg)/fitness_stdev)/exp_stdev_sum + cumulative_exp_stdev_sum);
-        cumulative_exp_stdev_sum += exp(-(fitness[i]-fitness_avg)/fitness_stdev)/exp_stdev_sum;
+        cumulative_exp_stdev_sum += exp(-(fitness[i]-fitness_avg)/(fitness_stdev+1e-6))/(exp_stdev_sum+1e-6);
     }
     // printf("\n");
 

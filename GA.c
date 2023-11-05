@@ -171,6 +171,7 @@ int main(int argc, char *argv[])
         else {
             converge_count = 0;
         }
+        printf("Converge count: %d\n", converge_count);
     }
 
     // <YOUR CODE: Jump to this part of code if the stopping criteria is met before MAX_GENERATIONS is met>
