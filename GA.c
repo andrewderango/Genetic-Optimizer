@@ -204,17 +204,17 @@ int main(int argc, char *argv[])
     printf("Best Solution Found: (");
     for (int i = 0; i < NUM_VARIABLES; i++) {
         if (i == 0) {
-            printf("%f, ", optimal_solution[i]);
+            printf("%lf, ", optimal_solution[i]);
         }
         else if (i == NUM_VARIABLES - 1) {
-            printf("%f)", optimal_solution[i]);
+            printf("%lf)", optimal_solution[i]);
         }
         else {
-            printf("%f, ", optimal_solution[i]);
+            printf("%lf, ", optimal_solution[i]);
         
         }
     }
-    printf("\nBest Fitness: %f\n", optimal_fitness);
+    printf("\nBest Fitness: %lf\n", optimal_fitness);
     printf("Generations Used: %d\n", generation);
     return 0;
 }
