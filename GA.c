@@ -214,7 +214,7 @@ int main(int argc, char *argv[])
         
         }
     }
-    printf("\nBest Fitness: %lf\n", optimal_fitness);
+    printf("\nBest Fitness: %.15f\n", optimal_fitness);
     printf("Generations Used: %d\n", generation);
     return 0;
 }
