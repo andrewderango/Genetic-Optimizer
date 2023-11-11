@@ -73,7 +73,7 @@ int main(int argc, char *argv[])
 
         for (int i = 0; i < POPULATION_SIZE; i++) {
             fitness[i] = Objective_function(NUM_VARIABLES, population[i]);
-            cumulative_fitness_probs[i] = 1/(fitness[i]+1e-6);
+            cumulative_fitness_probs[i] = 1/(fitness[i]+1e-16);
             if (i == 0 || fitness[i] < min_fitness) {
                 min_fitness = fitness[i];
             }
