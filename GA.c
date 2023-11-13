@@ -135,8 +135,7 @@ int main(int argc, char *argv[])
         // printf("\n-- MUTATION --\n");
         // printf("x1\t\tx2\t\tFitness\n");
 
-        population[0][0] = generation; // I know this is a bad way to do this. But I can't edit the header file, so this is the only way to access the generation number in the mutate function.
-        mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate);
+        mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate, generation);
         
         for (int i = 0; i < POPULATION_SIZE; i++) {
             for (int j = 0; j < NUM_VARIABLES; j++) {
