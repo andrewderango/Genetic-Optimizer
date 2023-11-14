@@ -16,23 +16,33 @@ int main(int argc, char *argv[])
     double crossover_rate, mutate_rate, stop_criteria;
     int converge_count = 0;
 
-    // Check for proper input types
+    // Check for proper input types and values
     if (sscanf(argv[1], "%d", &POPULATION_SIZE) != 1 ||
         sscanf(argv[2], "%d", &MAX_GENERATIONS) != 1 ||
         sscanf(argv[3], "%lf", &crossover_rate) != 1 ||
         sscanf(argv[4], "%lf", &mutate_rate) != 1 ||
         sscanf(argv[5], "%lf", &stop_criteria) != 1) {
-        fprintf(stderr, "Error: Invalid argument types.\nPlease provide <int> <int> <double> <double> <double>\n");
+        printf("Error: Invalid argument types.\nPlease provide <int> <int> <double> <double> <double>\n");
+        return 1;
+    }
+    if (POPULATION_SIZE < 1 || 
+        MAX_GENERATIONS < 1 || 
+        crossover_rate < 0.0 || 
+        crossover_rate > 1.0 || 
+        mutate_rate < 0.0 || 
+        mutate_rate > 1.0 || 
+        stop_criteria < 0.0) {
+        printf("Error: Invalid argument values. Please provide values within the following range:\n1 < Population Size\n1 < Max Generations\n0.0 < Crossover Rate < 1.0\n0.0 < Mutate Rate < 1.0\n0.0 < Stop Criteria\n");
         return 1;
     }
 
-    int NUM_VARIABLES = 2; // the number of variables
+    int NUM_VARIABLES = 2; // The number of dimensions, i.e. dimension of the search space
     double Lbound[] = {-5.0, -5.0}; // the lower bounds of variables
     double Ubound[] = {5.0, 5.0}; // the upper bounds of variable
     // Length of Lbound and Ubound should be equal to NUM_VARIABLES
 
-    printf("Genetic Algorithm is initiated.\n");
-    printf("-----------------------------------------\n");
+    printf("\nGenetic Algorithm is initiated.\n");
+    printf("-------------------------------------------------------------\n");
 
     // Seeding RNG and starting timer
     srand(time(NULL));
@@ -42,13 +52,28 @@ int main(int argc, char *argv[])
 
     // Initial printouts: GA Parameters
     printf("Number of Variables: %d\n", NUM_VARIABLES);
-    printf("Lower Bounds: [%f, %f]\n", Lbound[0], Lbound[1]); // change this for more vars
-    printf("Upper Bounds: [%f, %f]\n\n", Ubound[0], Ubound[1]); // change this for more vars
+    printf("Lower Bounds: [");
+    for(int i = 0; i < NUM_VARIABLES; i++) {
+        printf("%f", Lbound[i]);
+        if (i < NUM_VARIABLES - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n");
+    printf("Upper Bounds: [");
+    for(int i = 0; i < NUM_VARIABLES; i++) {
+        printf("%f", Ubound[i]);
+        if (i < NUM_VARIABLES - 1) {
+            printf(", ");
+        }
+    }
+    printf("]\n\n");
+
     printf("Population Size: %d\n", POPULATION_SIZE);
     printf("Max Generations: %d\n", MAX_GENERATIONS);
-    printf("Crossover Rate: %f\n", crossover_rate);
-    printf("Mutate Rate: %f\n", mutate_rate);
-    printf("Stopping Criteria: %f\n", stop_criteria);
+    printf("Crossover Rate: %.3f\n", crossover_rate);
+    printf("Mutate Rate: %.3f\n", mutate_rate);
+    printf("Stopping Criteria: %.3e\n", stop_criteria);
 
     // Array definitions
     double population[POPULATION_SIZE][NUM_VARIABLES];
@@ -61,11 +86,10 @@ int main(int argc, char *argv[])
     // Create Generation 0
     generate_population(POPULATION_SIZE, NUM_VARIABLES, population, Lbound, Ubound);
 
-    // iteration starts here. The loop continues until MAX_GENERATIONS is reached
-    // Or stopping criteria is met
+    // Iterate through generations until stop criteria or max generations is met
     int generation;
     for (generation = 0; generation < MAX_GENERATIONS; generation++) {
-        printf("\n-- GENERATION %d --\n", generation + 1);
+        // printf("\n-- GENERATION %d --\n", generation + 1);
 
         // <YOUR CODE: Compute the fitness values using objective function for
         // each row in "population" (each set of variables)> like:
@@ -152,8 +176,8 @@ int main(int argc, char *argv[])
         // Now you have the a new population, and it goes to the beginning of loop to re-compute all again
 
         // printf("Generation %d Progress\n", generation + 1);
-        printf("Previous best fitness: %f\n", min_fitness);
-        printf("New best fitness: %f\n", new_min_fitness);
+        // printf("Previous best fitness: %f\n", min_fitness);
+        // printf("New best fitness: %f\n", new_min_fitness);
         if (fabs(new_min_fitness - min_fitness) < stop_criteria) {
             converge_count++;
             if (converge_count == 10) {
@@ -165,7 +189,7 @@ int main(int argc, char *argv[])
         else {
             converge_count = 0;
         }
-        printf("Converge count: %d\n", converge_count);
+        // printf("Converge count: %d\n", converge_count);
     }
 
     // Find best soluton by minimum fitness
@@ -187,7 +211,7 @@ int main(int argc, char *argv[])
 
     // Print the best solution and fitness
     printf("\nResults\n");
-    printf("-----------------------------------------\n");
+    printf("-------------------------------------------------------------\n");
     printf("CPU time: %f seconds\n", cpu_time_used);
     printf("Best Solution Found: (");
     for (int i = 0; i < NUM_VARIABLES; i++) {
@@ -203,6 +227,6 @@ int main(int argc, char *argv[])
         }
     }
     printf("\nBest Fitness: %.15f\n", optimal_fitness);
-    printf("Generations Used: %d\n", generation);
+    printf("Generations Elapsed: %d\n", generation);
     return 0;
 }

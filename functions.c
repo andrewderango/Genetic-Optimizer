@@ -1,10 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <math.h>
-// delete whatever headers aren't used upon submission
 
-// function prototype
+// Objective function prototype
 double Objective_function(int NUM_VARIABLES, double x[NUM_VARIABLES]);
 
 // implement a function to return a value between min and max
@@ -280,15 +278,15 @@ void mutate(int POPULATION_SIZE, int NUM_VARIABLES, double new_population[POPULA
         }
     }
 
-    printf("Best Fitness: %f\n", best_fitness);
-    printf("Best Fitness Coordinates: ");
-    for (int i = 0; i < NUM_VARIABLES; i++) {
-        printf("%f ", best_fitness_coord[i]);
-    }
-    printf("\n");
+    // printf("Best Fitness: %f\n", best_fitness);
+    // printf("Best Fitness Coordinates: ");
+    // for (int i = 0; i < NUM_VARIABLES; i++) {
+    //     printf("%f ", best_fitness_coord[i]);
+    // }
+    // printf("\n");
 
     // printf("Generation: %d\n", generation);
-    printf("Activator: %f\n", activator);
+    // printf("Activator: %f\n", activator);
     double range[NUM_VARIABLES];
 
     for (int i = 0; i < NUM_VARIABLES; i++) {
@@ -304,10 +302,10 @@ void mutate(int POPULATION_SIZE, int NUM_VARIABLES, double new_population[POPULA
         }
     }
 
-    for (int i = 0; i < NUM_VARIABLES; i++) {
-        printf("Lbound[%d]: %f\n", i, Lbound[i]);
-        printf("Ubound[%d]: %f\n", i, Ubound[i]);
-    }
+    // for (int i = 0; i < NUM_VARIABLES; i++) {
+    //     printf("Lbound[%d]: %f\n", i, Lbound[i]);
+    //     printf("Ubound[%d]: %f\n", i, Ubound[i]);
+    // }
 
     int mutate_index;
     int mutate_indexes[target_mutation];
