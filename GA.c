@@ -37,9 +37,9 @@ int main(int argc, char *argv[])
     }
 
     int NUM_VARIABLES = 2; // The number of dimensions, i.e. dimension of the search space
-    double Lbound[] = {-5.0, -5.0}; // the lower bounds of variables
-    double Ubound[] = {5.0, 5.0}; // the upper bounds of variable
-    // Length of Lbound and Ubound should be equal to NUM_VARIABLES
+    double Lbound[] = {-5.0, -5.0}; // The lower bounds of variables
+    double Ubound[] = {5.0, 5.0}; // The upper bounds of variables
+    // Length of Lbound and Ubound arrays should be equal to NUM_VARIABLES
 
     printf("\nGenetic Algorithm is initiated.\n");
     printf("-------------------------------------------------------------\n");
@@ -89,123 +89,89 @@ int main(int argc, char *argv[])
     // Iterate through generations until stop criteria or max generations is met
     int generation;
     for (generation = 0; generation < MAX_GENERATIONS; generation++) {
-        // printf("\n-- GENERATION %d --\n", generation + 1);
 
-        // <YOUR CODE: Compute the fitness values using objective function for
-        // each row in "population" (each set of variables)> like:
-        // compute_objective_function(POPULATION_SIZE, NUM_VARIABLES, population, fitness);
-
+        // Fitness for each individual and cumulative fitness probability calculation
+        double fitness_sum = 0.0;
         for (int i = 0; i < POPULATION_SIZE; i++) {
             fitness[i] = Objective_function(NUM_VARIABLES, population[i]);
             cumulative_fitness_probs[i] = 1/(fitness[i]+1e-16);
+            fitness_sum += cumulative_fitness_probs[i];
             if (i == 0 || fitness[i] < min_fitness) {
                 min_fitness = fitness[i];
             }
-        }
-
-        double fitness_sum = 0.0;
-        for (int i = 0; i < POPULATION_SIZE; i++) {
-            fitness_sum += cumulative_fitness_probs[i];
         }
         for (int i = 0; i < POPULATION_SIZE; i++) {
             cumulative_fitness_probs[i] = cumulative_fitness_probs[i]/fitness_sum + (i > 0 ? cumulative_fitness_probs[i-1] : 0);
         }
 
-        // printf("-- INITIAL POPULATION --\n");
-        // printf("x1\t\tx2\t\tFitness\t\tCumulative Scaled Fitness\n");
-        // for (int i = 0; i < POPULATION_SIZE; i++) {
-        //     for (int j = 0; j < NUM_VARIABLES; j++) {
-        //         printf("%f\t", population[i][j]);
-        //     }
-        //     printf("%f\t%f\n", fitness[i], cumulative_fitness_probs[i]);
-        // }
-        // printf("Best Fitness: %f\n", min_fitness);
-
-        // <YOUR CODE: Here implement the logic of finding best solution with minimum fitness value
-        // and the stopping criteria>
-
-        // printf("\n-- EVOLUTION --\n");
-        // printf("Random\t\tIndex\tx1\t\tx2\n");
+        // Select which individuals' gene sequences move on to the next generation based on fitness
         for (int i = 0; i < POPULATION_SIZE; i++) {
             double random = generate_random(0.0, 1.0);
-            // printf("%f\t", random);
-            for (int j = 0; j < POPULATION_SIZE; j++) {
-                if (random < cumulative_fitness_probs[j]) {
-                    // printf("%d\t", j);
-                    for (int k = 0; k < NUM_VARIABLES; k++) {
-                        new_population[i][k] = population[j][k];
-                        fitness[i] = Objective_function(NUM_VARIABLES, new_population[i]);
-                        // printf("%f\t", new_population[i][k]);
-                    }
-                    // printf("\n");
-                    break;
+            int left = 0, right = POPULATION_SIZE - 1; // Binary search
+            while (left < right) {
+                int mid = left + (right - left) / 2;
+                if (random < cumulative_fitness_probs[mid]) {
+                    right = mid;
+                } else {
+                    left = mid + 1;
                 }
             }
+            for (int k = 0; k < NUM_VARIABLES; k++) {
+                new_population[i][k] = population[left][k];
+                fitness[i] = Objective_function(NUM_VARIABLES, new_population[i]);
+            }
         }
-
-        // <YOUR CODE: Here call the crossover function>
+        // Copy the selected individuals back to the population array
+        for (int i = 0; i < POPULATION_SIZE; i++) {
+            for (int k = 0; k < NUM_VARIABLES; k++) {
+                population[i][k] = new_population[i][k];
+            }
+            fitness[i] = Objective_function(NUM_VARIABLES, population[i]);
+        }
         
-        // printf("\n-- CROSSOVER --\n");
+        // Perform crossover and mutation
         crossover(POPULATION_SIZE, NUM_VARIABLES, fitness, new_population, population, crossover_rate);
-        // for (int i = 0; i < POPULATION_SIZE; i++) {
-        //     for (int j = 0; j < NUM_VARIABLES; j++) {
-        //         printf("%f ", new_population[i][j]);
-        //     }
-        //     printf("\n");
-        // }
-
-        // <YOUR CODE: Here call the mutation function>
-
-        // printf("\n-- MUTATION --\n");
-        // printf("x1\t\tx2\t\tFitness\n");
-
         mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate, generation);
         
+        // Update population and fitness
         for (int i = 0; i < POPULATION_SIZE; i++) {
+            double current_fitness;
             for (int j = 0; j < NUM_VARIABLES; j++) {
                 population[i][j] = new_population[i][j];
-                // printf("%f\t", new_population[i][j]);
             }
-            // printf("%f\n", Objective_function(NUM_VARIABLES, new_population[i]));
-            if (i == 0 || Objective_function(NUM_VARIABLES, new_population[i]) < new_min_fitness) {
-                new_min_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+            current_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+            if (i == 0 || current_fitness < new_min_fitness) {
+                new_min_fitness = current_fitness;
             }
         }
-        // printf("Best Fitness: %f\n\n", new_min_fitness);
 
-        // Now you have the a new population, and it goes to the beginning of loop to re-compute all again
-
-        // printf("Generation %d Progress\n", generation + 1);
-        // printf("Previous best fitness: %f\n", min_fitness);
-        // printf("New best fitness: %f\n", new_min_fitness);
+        // Check for stop condition
         if (fabs(new_min_fitness - min_fitness) < stop_criteria) {
             converge_count++;
             if (converge_count == 10) {
                 generation++;
-                // printf("Converged at Generation %d\n", generation);
                 break;
             }
         }
         else {
             converge_count = 0;
         }
-        // printf("Converge count: %d\n", converge_count);
     }
 
-    // Find best soluton by minimum fitness
+    // Finding optimal solution and fitness
     double optimal_solution[NUM_VARIABLES];
     double optimal_fitness;
     for (int i = 0; i < POPULATION_SIZE; i++) {
-        for (int j = 0; j < NUM_VARIABLES; j++) {
-            if (i == 0 || Objective_function(NUM_VARIABLES, new_population[i]) < optimal_fitness) {
-                optimal_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
-                for (int k = 0; k < NUM_VARIABLES; k++) {
-                    optimal_solution[k] = new_population[i][k];
-                }
+        double current_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+        if (i == 0 || current_fitness < optimal_fitness) {
+            optimal_fitness = current_fitness;
+            for (int k = 0; k < NUM_VARIABLES; k++) {
+                optimal_solution[k] = new_population[i][k];
             }
         }
     }
 
+    // End timer
     end_time = clock();
     cpu_time_used = ((double)(end_time - start_time)) / CLOCKS_PER_SEC;
 
