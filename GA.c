@@ -118,8 +118,8 @@ int main(int argc, char *argv[])
             }
             for (int k = 0; k < NUM_VARIABLES; k++) {
                 new_population[i][k] = population[left][k];
-                fitness[i] = Objective_function(NUM_VARIABLES, new_population[i]);
             }
+            fitness[i] = Objective_function(NUM_VARIABLES, new_population[i]);
         }
         // Copy the selected individuals back to the population array
         for (int i = 0; i < POPULATION_SIZE; i++) {
@@ -135,11 +135,10 @@ int main(int argc, char *argv[])
         
         // Update population and fitness
         for (int i = 0; i < POPULATION_SIZE; i++) {
-            double current_fitness;
             for (int j = 0; j < NUM_VARIABLES; j++) {
                 population[i][j] = new_population[i][j];
             }
-            current_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
+            double current_fitness = Objective_function(NUM_VARIABLES, new_population[i]);
             if (i == 0 || current_fitness < new_min_fitness) {
                 new_min_fitness = current_fitness;
             }
