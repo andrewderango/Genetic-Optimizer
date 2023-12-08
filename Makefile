@@ -5,7 +5,7 @@ SRC = GA.c functions.c OF.c
 OBJ = $(SRC:.c=.o)
 
 $(TARGET): $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) -lm
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $<
