@@ -7,4 +7,5 @@ GA: GA.c OF.c functions.c functions.h
 	$(CC) $(CFLAGS) -o GA GA.c OF.c functions.c -lm
 
 clean:
-	rm -f $(OBJ) $(TARGET)
+	rm -f GA
+	rm -rf GA.dSYM
