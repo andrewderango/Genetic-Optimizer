@@ -294,42 +294,29 @@
 
  	\begin{mdframed}[style=myboxstyleTerminal1]
 		\begin{verbatim}
-		CC = gcc
-            CFLAGS = -Wall -g -O3
-            TARGET = GA
-            SRC = GA.c functions.c OF.c
-            OBJ = $(SRC:.c=.o)
-            
-            $(TARGET): $(OBJ)
-            	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ)
-            
-            %.o: %.c
-            	$(CC) $(CFLAGS) -c $<
-            
-            clean:
-            	rm -f $(OBJ) $(TARGET)
+  
+CC = gcc
+CFLAGS = -Wall -g -O3
+
+all: GA
+
+GA: GA.c OF.c functions.c functions.h
+    $(CC) $(CFLAGS) -o GA GA.c OF.c functions.c -lm
+
+clean:
+    rm -f $(OBJ) $(TARGET)
 		\end{verbatim}
 	\end{mdframed}
 
 This Makefile is a set of instructions instigated from the command line that aids in the compilation and linking processes of potentially multiple source code files. An example is shown in the code block above. Here are the roles of the individual components within the Makefile:
 
-\codebox{CC=gcc}: CC sets the compiler that will be used to compile the program. In this case, we are using gcc.
+\codebox{CC = gcc}: CC sets the compiler that will be used to compile the program. In this case, we are using gcc.
 
-\codebox{CFLAGS= -Wall -g -O3}: CFLAGS lists the flags that will be used by the compiler defined above. Each dash represents a precursor for another flag.  -Wall enables the compiler to display warning messages upon compilation, such as declared but unused variables within the program. -g enables the compiler to provide debugging information, and -O3 enables possible optimizations within the program to further reduce the computation time.
+\codebox{CFLAGS = -Wall -g -O3}: CFLAGS lists the flags that will be used by the compiler defined above. Each dash represents a precursor for another flag.  -Wall enables the compiler to display warning messages upon compilation, such as declared but unused variables within the program. -g enables the compiler to provide debugging information, and -O3 enables possible optimizations within the program to further reduce the computation time.
 
-\codebox{TARGET=GA}: TARGET defines the name of the final executable that will be placed in the same directory. This name ('GA' in this case) will need to be called in the command line to run the program.
+\codebox{GA: GA.c OF.c functions.c functions.h}: This line is where the target is built. We are naming the target \codebox{GA}, as defined by the first two characters of this line. The parameters after the colon dictate which files the target is dependent on; in this case, \codebox{GA} is dependent on \codebox{GA.c}, \codebox{OF.c}, \codebox{functions.c}, and \codebox{functions.h}.
 
-\codebox{SRC=GA.c functions.c OF.c}: Define the source files containing C code that need to be compiled. Did not include functions.h because it is a header file and only contains function prototypes; not executable C code.
-
-\codebox{OBJ=\$(SRC:.c=.o)}: Creates object files with .o extension for each of the files defined in the SRC component above.
-
-\codebox{\$(TARGET): \$(OBJ)}: This states that the target files are dependent on the object files. Thus, if there are changes made to the object files defined above, the target (GA) will need to be rebuilt.
-
-\codebox{\$(CC) \$(CFLAGS) -o \$(TARGET) \$(OBJ)}: Responsible for building the target file, GA, from the compiler. With this, it sends along the flags and other specified parameters as defined above.
-
-\codebox{\%.o: \%.c}: This is a pattern rule. It defines how to generate the .o file from the .c file.
-
-\codebox{\$(CC) \$(CFLAGS) -c \$<}: Command that is run which helps the construction of an object file from a C file. This command passes the flags specified in \codebox{CFLAGS}. The -c option causes the compiler to generate the object file.
+\codebox{\$(CC) \$(CFLAGS) -o GA GA.c OF.c fucntions.c -lm}: When \codebox{make} is run in the command line, this is the command that will be run. It is responsible for building the target, as described above. This command uses the defined compiler and flags listed above. \codebox{-o GA} names executable file \codebox{GA}. After listing which files need to be compiled, it includes the \codebox{-lm} flag to link with the \codebox{math.h} library.
 
 \codebox{clean}: This is an independent rule. It does not depend on any of the parameters defined above.
 
