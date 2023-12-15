@@ -131,7 +131,7 @@ int main(int argc, char *argv[])
         
         // Perform crossover and mutation
         crossover(POPULATION_SIZE, NUM_VARIABLES, fitness, new_population, population, crossover_rate);
-        mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, population, Lbound, Ubound, mutate_rate, generation);
+        mutate(POPULATION_SIZE, NUM_VARIABLES, new_population, Lbound, Ubound, mutate_rate, generation);
         
         // Update population and fitness
         for (int i = 0; i < POPULATION_SIZE; i++) {

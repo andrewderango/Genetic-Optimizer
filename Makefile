@@ -1,5 +1,5 @@
 CC = gcc
-CFLAGS = -Wall -g -O3
+CFLAGS = -Wall -Wextra -g -O3
 
 all: GA
 
