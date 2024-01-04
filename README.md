@@ -56,7 +56,9 @@ Generations Elapsed: 1000
 ```
 If we plot the 3D Ackley function in the specified range, we see that the absolute minimum is precisely at (0, 0) with a fitness of 0.
 
-
+<p align="center">
+  <img src="https://github.com/andrewderango/Genetic-Optimizer/assets/93727693/17c5abd7-250c-4a28-9b58-336881df6bbd" alt="3D Ackley Function via Desmos" width="500">
+</p>
 
 Not bad!
 
@@ -76,7 +78,7 @@ In the crossover function, a crucial adaptation was made to prioritize the cross
 While these modifications may decrease genetic diversity in the population, this effect is intentionally deferred to later generations. The adjustments are strategically timed to ensure that the global minimum is identified prior to convergence. It's important to note that exceptionally low population counts or extensive initial search ranges may present challenges, but these are common difficulties encountered by standard genetic algorithms as well.
 
 ### Evaluating the Improvements
-To gauge the impact of the introduced modifications on the algorithm's performance, we shall conduct a comparative analysis of its behavior before and after the implementation of these changes. For both test cases below, we are using a crossover rate of 50%, a mutation rate of 20%, and a 3D Ackley function.
+To gauge the impact of the introduced modifications on the algorithm's performance, we shall conduct a comparative analysis of its behaviour before and after the implementation of these changes. For both test cases below, we are using a crossover rate of 50%, a mutation rate of 20%, and a 3D Ackley function.
 
 #### Performance of Standard Genetic Algorithm
 
